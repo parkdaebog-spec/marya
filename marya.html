@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A special virtual bouquet gift for Marya">
+    <meta name="theme-color" content="#291147">
+    <title>A Special Bouquet For Marya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f051d 0%, #291147 50%, #4a1c6d 100%);
+            --primary-pink: #ff65a3;
+            --secondary-rose: #ff4a85;
+            --accent-glow: rgba(255, 101, 163, 0.4);
+            --gold: #ffd700;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            overflow-x: hidden; color: #ffffff;
+        }
+        .sparkle-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1; overflow: hidden;
+        }
+        .container {
+            width: 100%; max-width: 700px; padding: 20px;
+            text-align: center; z-index: 10;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .screen { display: none; width: 100%; animation: fadeIn 1s ease forwards; }
+        .screen.active { display: flex; flex-direction: column; align-items: center; }
+        .intro-card {
+            background: rgba(255,255,255,0.05); backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1);
+            padding: 40px 30px; border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+            width: 100%;
+        }
+        .heart-icon { font-size: 50px; animation: pulse 1.5s infinite; margin-bottom: 20px; display: inline-block; }
+        h1 {
+            font-family: 'Dancing Script', cursive; font-size: 2.8rem; margin-bottom: 15px;
+            background: linear-gradient(to right, #ff9ebb, #ff5e97);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .subtitle { font-size: 0.95rem; color: #cccbdf; margin-bottom: 30px; line-height: 1.6; }
+        .btn {
+            background: linear-gradient(45deg, var(--secondary-rose), var(--primary-pink));
+            color: white; border: none; padding: 14px 32px; font-size: 1rem;
+            font-weight: 600; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 8px 20px var(--accent-glow);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); outline: none;
+        }
+        .btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 25px rgba(255,101,163,0.6); }
+        .btn:active { transform: translateY(-1px); }
+        .animation-wrapper {
+            position: relative; width: 100%; height: 460px;
+            display: flex; justify-content: center; align-items: flex-end; margin-bottom: 20px;
+        }
+        .bouquet-svg { width: 440px; height: 460px; overflow: visible; }
+        .stem {
+            stroke-width: 3; stroke-linecap: round; fill: none;
+            stroke-dasharray: 600; stroke-dashoffset: 600;
+            animation: drawStem 2s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+        .stem-green { stroke: #2e7d32; }
+        .stem-dark { stroke: #1b5e20; }
+        .stem-1 { animation-delay: 0s; } .stem-2 { animation-delay: 0.15s; } .stem-3 { animation-delay: 0.3s; }
+        .stem-4 { animation-delay: 0.45s; } .stem-5 { animation-delay: 0.2s; } .stem-6 { animation-delay: 0.35s; }
+        .stem-7 { animation-delay: 0.1s; } .stem-8 { animation-delay: 0.5s; } .stem-9 { animation-delay: 0.25s; }
+        .stem-10 { animation-delay: 0.4s; } .stem-11 { animation-delay: 0.18s; } .stem-12 { animation-delay: 0.38s; }
+        .leaf { opacity: 0; animation: growLeaf 1.5s ease-out forwards; }
+        .leaf-green { fill: #4caf50; } .leaf-dark { fill: #388e3c; } .leaf-light { fill: #66bb6a; }
+        .leaf-1 { animation-delay: 1.2s; transform-origin: 165px 310px; }
+        .leaf-2 { animation-delay: 1.5s; transform-origin: 235px 290px; }
+        .leaf-3 { animation-delay: 1.8s; transform-origin: 200px 330px; }
+        .leaf-4 { animation-delay: 1.4s; transform-origin: 265px 300px; }
+        .leaf-5 { animation-delay: 2s; transform-origin: 180px 280px; }
+        .leaf-6 { animation-delay: 1.6s; transform-origin: 225px 320px; }
+        .flower-group { transform: scale(0); animation: bloomFlower 2.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+        .flower-1 { transform-origin: 220px 120px; animation-delay: 1.5s; }
+        .flower-2 { transform-origin: 155px 145px; animation-delay: 1.8s; }
+        .flower-3 { transform-origin: 285px 130px; animation-delay: 2s; }
+        .flower-4 { transform-origin: 195px 95px; animation-delay: 2.2s; }
+        .flower-5 { transform-origin: 250px 85px; animation-delay: 2.4s; }
+        .flower-6 { transform-origin: 170px 110px; animation-delay: 2.6s; }
+        .flower-7 { transform-origin: 270px 100px; animation-delay: 2.8s; }
+        .flower-center { opacity: 0; animation: fadeInCenter 1s ease-in forwards; }
+        .center-gold { fill: var(--gold); filter: drop-shadow(0 0 5px var(--gold)); }
+        .center-amber { fill: #ffb300; filter: drop-shadow(0 0 4px #ffb300); }
+        .center-1 { animation-delay: 2.8s; } .center-2 { animation-delay: 3.1s; } .center-3 { animation-delay: 3.3s; }
+        .center-4 { animation-delay: 3.5s; } .center-5 { animation-delay: 3.7s; } .center-6 { animation-delay: 3.9s; }
+        .center-7 { animation-delay: 4.1s; }
+        .ribbon { opacity: 0; animation: fadeIn 1s ease forwards 4.5s; }
+        .letter-card {
+            background: rgba(255,255,255,0.95); color: #2b1042; border-radius: 20px;
+            padding: 30px; width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            opacity: 0; transform: translateY(30px);
+            animation: slideUpLetter 1.2s cubic-bezier(0.16,1,0.3,1) 4.5s forwards;
+            position: relative;
+        }
+        .letter-text {
+            font-family: 'Dancing Script', cursive; font-size: 1.4rem; line-height: 1.7;
+            min-height: 100px; text-align: left; white-space: pre-wrap;
+            border: none; outline: none; width: 100%; resize: none; background: transparent; color: #3a1554;
+        }
+        .edit-controls {
+            margin-top: 15px; border-top: 1px dashed rgba(0,0,0,0.15);
+            padding-top: 15px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .edit-hint { font-size: 0.75rem; color: #706885; font-family: 'Poppins', sans-serif; max-width: 60%; text-align: left; }
+        .action-sub-btn {
+            background: #4a1c6d; color: white; border: none; padding: 8px 16px;
+            font-size: 0.8rem; border-radius: 20px; cursor: pointer;
+            font-family: 'Poppins', sans-serif; font-weight: 600; transition: background 0.2s;
+        }
+        .action-sub-btn:hover { background: #62288f; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.12); } 100% { transform: scale(1); } }
+        @keyframes drawStem { to { stroke-dashoffset: 0; } }
+        @keyframes growLeaf { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes bloomFlower { 0% { transform: scale(0) rotate(-15deg); } 100% { transform: scale(1) rotate(0deg); } }
+        @keyframes fadeInCenter { to { opacity: 1; } }
+        @keyframes slideUpLetter { to { opacity: 1; transform: translateY(0); } }
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) scale(0.3); opacity: 0; }
+            50% { opacity: 0.8; } 100% { transform: translateY(-100px) scale(1); opacity: 0; }
+        }
+        @keyframes petalFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(120px) rotate(360deg); opacity: 0; }
+        }
+        .particle {
+            position: absolute; border-radius: 50%; pointer-events: none;
+            animation: floatParticle linear infinite;
+        }
+        .petal-falling {
+            position: absolute; width: 8px; height: 12px; border-radius: 50% 0 50% 50%;
+            pointer-events: none; animation: petalFall linear infinite;
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: 2.2rem; }
+            .letter-text { font-size: 1.2rem; }
+            .animation-wrapper { height: 380px; }
+            .bouquet-svg { width: 340px; height: 380px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sparkle-bg" id="sparkleLayer"></div>
+    <div class="container">
+        <div class="screen active" id="introScreen">
+            <div class="intro-card">
+                <div class="heart-icon">&#127800;</div>
+                <h1 id="titleDisplay">To My Dearest Marya</h1>
+                <p class="subtitle" id="subtitleDisplay">I picked every flower in this bouquet with you in mind. Each one carries a piece of my heart. Click below to see what bloomed for you.</p>
+                <button class="btn" onclick="startFlowerBloom()">Open Your Bouquet &#10024;</button>
+            </div>
+        </div>
+        <div class="screen" id="flowerScreen">
+            <div class="animation-wrapper">
+                <svg class="bouquet-svg" viewBox="0 0 440 460">
+                    <defs>
+                        <radialGradient id="rose-pink" cx="50%" cy="40%">
+                            <stop offset="0%" stop-color="#ffb3c6"/>
+                            <stop offset="50%" stop-color="#ff6b8a"/>
+                            <stop offset="100%" stop-color="#d6336c"/>
+                        </radialGradient>
+                        <radialGradient id="rose-red" cx="50%" cy="40%">
+                            <stop offset="0%" stop-color="#ff8a80"/>
+                            <stop offset="50%" stop-color="#f44336"/>
+                            <stop offset="100%" stop-color="#b71c1c"/>
+                        </radialGradient>
+                        <radialGradient id="peony-peach" cx="50%" cy="40%">
+                            <stop offset="0%" stop-color="#ffdcc0"/>
+                            <stop offset="50%" stop-color="#ffab91"/>
+                            <stop offset="100%" stop-color="#e64a19"/>
+                        </radialGradient>
+                        <radialGradient id="daisy-white" cx="50%" cy="40%">
+                            <stop offset="0%" stop-color="#ffffff"/>
+                            <stop offset="70%" stop-color="#fff9c4"/>
+                            <stop offset="100%" stop-color="#fdd835"/>
+                        </radialGradient>
+                        <radialGradient id="tulip-purple" cx="50%" cy="40%">
+                            <stop offset="0%" stop-color="#e1bee7"/>
+                            <stop offset="50%" stop-color="#ab47bc"/>
+                            <stop offset="100%" stop-color="#6a1b9a"/>
+                        </radialGradient>
+                        <radialGradient id="lily-orange" cx="50%" cy="40%">
+                            <stop offset="0%" stop-color="#ffe0b2"/>
+                            <stop offset="50%" stop-color="#ff9800"/>
+                            <stop offset="100%" stop-color="#e65100"/>
+                        </radialGradient>
+                        <radialGradient id="lavender-spray" cx="50%" cy="40%">
+                            <stop offset="0%" stop-color="#e8d5f5"/>
+                            <stop offset="60%" stop-color="#ba68c8"/>
+                            <stop offset="100%" stop-color="#7b1fa2"/>
+                        </radialGradient>
+                        <linearGradient id="ribbon-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#ff69b4"/>
+                            <stop offset="100%" stop-color="#c2185b"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- STEMS -->
+                    <path class="stem stem-green stem-1" d="M 220 440 Q 215 340 220 120"/>
+                    <path class="stem stem-dark stem-2" d="M 220 440 Q 190 350 155 145"/>
+                    <path class="stem stem-green stem-3" d="M 220 440 Q 250 345 285 130"/>
+                    <path class="stem stem-dark stem-4" d="M 220 440 Q 200 330 195 95"/>
+                    <path class="stem stem-green stem-5" d="M 220 440 Q 240 325 250 85"/>
+                    <path class="stem stem-dark stem-6" d="M 220 440 Q 185 340 170 110"/>
+                    <path class="stem stem-green stem-7" d="M 220 440 Q 260 335 270 100"/>
+                    <path class="stem stem-dark stem-8" d="M 220 440 Q 175 350 140 170"/>
+                    <path class="stem stem-green stem-9" d="M 220 440 Q 270 350 300 160"/>
+                    <path class="stem stem-dark stem-10" d="M 220 440 Q 210 355 230 150"/>
+                    <path class="stem stem-green stem-11" d="M 220 440 Q 195 360 185 175"/>
+                    <path class="stem stem-dark stem-12" d="M 220 440 Q 245 355 260 165"/>
+
+                    <!-- LEAVES -->
+                    <path class="leaf leaf-green leaf-1" d="M 165 310 Q 130 290 145 330 Q 160 320 165 310 Z"/>
+                    <path class="leaf leaf-dark leaf-2" d="M 235 290 Q 270 270 260 310 Q 245 300 235 290 Z"/>
+                    <path class="leaf leaf-light leaf-3" d="M 200 330 Q 165 350 185 370 Q 200 350 200 330 Z"/>
+                    <path class="leaf leaf-green leaf-4" d="M 265 300 Q 300 280 285 320 Q 270 310 265 300 Z"/>
+                    <path class="leaf leaf-dark leaf-5" d="M 180 280 Q 145 260 160 300 Q 175 290 180 280 Z"/>
+                    <path class="leaf leaf-light leaf-6" d="M 225 320 Q 260 340 245 360 Q 230 340 225 320 Z"/>
+
+                    <!-- FLOWER 1: Pink Rose (center) -->
+                    <g class="flower-group flower-1">
+                        <path fill="url(#rose-pink)" d="M 220 120 C 195 80, 180 100, 190 120 C 180 140, 195 160, 220 140 C 245 160, 260 140, 250 120 C 260 100, 245 80, 220 120 Z"/>
+                        <path fill="url(#rose-pink)" d="M 220 120 C 200 90, 200 130, 220 130 C 240 130, 240 90, 220 120 Z" opacity="0.8"/>
+                        <circle class="flower-center center-gold center-1" cx="220" cy="118" r="6"/>
+                    </g>
+
+                    <!-- FLOWER 2: Red Rose (left) -->
+                    <g class="flower-group flower-2">
+                        <path fill="url(#rose-red)" d="M 155 145 C 130 105, 115 125, 125 145 C 115 165, 130 185, 155 165 C 180 185, 195 165, 185 145 C 195 125, 180 105, 155 145 Z"/>
+                        <path fill="url(#rose-red)" d="M 155 145 C 135 115, 135 155, 155 155 C 175 155, 175 115, 155 145 Z" opacity="0.7"/>
+                        <circle class="flower-center center-amber center-2" cx="155" cy="143" r="5"/>
+                    </g>
+
+                    <!-- FLOWER 3: Peach Peony (right) -->
+                    <g class="flower-group flower-3">
+                        <path fill="url(#peony-peach)" d="M 285 130 C 260 90, 245 110, 255 130 C 245 150, 260 170, 285 150 C 310 170, 325 150, 315 130 C 325 110, 310 90, 285 130 Z"/>
+                        <path fill="url(#peony-peach)" d="M 285 130 C 265 100, 265 140, 285 140 C 305 140, 305 100, 285 130 Z" opacity="0.8"/>
+                        <circle class="flower-center center-gold center-3" cx="285" cy="128" r="6"/>
+                    </g>
+
+                    <!-- FLOWER 4: White Daisy (top-left) -->
+                    <g class="flower-group flower-4">
+                        <ellipse cx="185" cy="80" rx="8" ry="14" fill="url(#daisy-white)" transform="rotate(0 195 95)"/>
+                        <ellipse cx="185" cy="80" rx="8" ry="14" fill="url(#daisy-white)" transform="rotate(45 195 95)"/>
+                        <ellipse cx="185" cy="80" rx="8" ry="14" fill="url(#daisy-white)" transform="rotate(90 195 95)"/>
+                        <ellipse cx="185" cy="80" rx="8" ry="14" fill="url(#daisy-white)" transform="rotate(135 195 95)"/>
+                        <ellipse cx="185" cy="80" rx="8" ry="14" fill="url(#daisy-white)" transform="rotate(180 195 95)"/>
+                        <ellipse cx="185" cy="80" rx="8" ry="14" fill="url(#daisy-white)" transform="rotate(225 195 95)"/>
+                        <ellipse cx="185" cy="80" rx="8" ry="14" fill="url(#daisy-white)" transform="rotate(270 195 95)"/>
+                        <ellipse cx="185" cy="80" rx="8" ry="14" fill="url(#daisy-white)" transform="rotate(315 195 95)"/>
+                        <circle class="flower-center center-amber center-4" cx="195" cy="95" r="7"/>
+                    </g>
+
+                    <!-- FLOWER 5: Purple Tulip (top-right) -->
+                    <g class="flower-group flower-5">
+                        <path fill="url(#tulip-purple)" d="M 250 85 C 235 55, 230 70, 235 85 C 230 100, 240 110, 250 100 C 260 110, 270 100, 265 85 C 270 70, 265 55, 250 85 Z"/>
+                        <path fill="url(#tulip-purple)" d="M 250 85 C 240 65, 245 95, 250 95 C 255 95, 260 65, 250 85 Z" opacity="0.7"/>
+                        <circle class="flower-center center-gold center-5" cx="250" cy="83" r="4"/>
+                    </g>
+
+                    <!-- FLOWER 6: Orange Lily (mid-left) -->
+                    <g class="flower-group flower-6">
+                        <ellipse cx="165" cy="95" rx="7" ry="13" fill="url(#lily-orange)" transform="rotate(-20 170 110)"/>
+                        <ellipse cx="165" cy="95" rx="7" ry="13" fill="url(#lily-orange)" transform="rotate(20 170 110)"/>
+                        <ellipse cx="165" cy="95" rx="7" ry="13" fill="url(#lily-orange)" transform="rotate(60 170 110)"/>
+                        <ellipse cx="165" cy="95" rx="7" ry="13" fill="url(#lily-orange)" transform="rotate(100 170 110)"/>
+                        <ellipse cx="165" cy="95" rx="7" ry="13" fill="url(#lily-orange)" transform="rotate(140 170 110)"/>
+                        <circle class="flower-center center-gold center-6" cx="170" cy="108" r="5"/>
+                    </g>
+
+                    <!-- FLOWER 7: Lavender Spray (mid-right) -->
+                    <g class="flower-group flower-7">
+                        <circle cx="263" cy="88" r="5" fill="url(#lavender-spray)"/>
+                        <circle cx="275" cy="92" r="5" fill="url(#lavender-spray)"/>
+                        <circle cx="270" cy="102" r="5" fill="url(#lavender-spray)"/>
+                        <circle cx="260" cy="100" r="5" fill="url(#lavender-spray)"/>
+                        <circle cx="267" cy="95" r="5" fill="url(#lavender-spray)"/>
+                        <circle class="flower-center center-amber center-7" cx="267" cy="95" r="3"/>
+                    </g>
+
+                    <!-- Small filler flowers -->
+                    <circle cx="145" cy="180" r="6" fill="url(#lavender-spray)" opacity="0.9"/>
+                    <circle cx="138" cy="190" r="5" fill="url(#tulip-purple)" opacity="0.8"/>
+                    <circle cx="300" cy="175" r="6" fill="url(#rose-pink)" opacity="0.9"/>
+                    <circle cx="308" cy="185" r="5" fill="url(#peony-peach)" opacity="0.8"/>
+                    <circle cx="235" cy="165" r="5" fill="url(#daisy-white)" opacity="0.9"/>
+                    <circle cx="180" cy="185" r="5" fill="url(#lily-orange)" opacity="0.8"/>
+
+                    <!-- Ribbon wrapping the bouquet -->
+                    <g class="ribbon">
+                        <path d="M 180 380 Q 220 395 260 380 Q 265 390 260 400 Q 220 415 180 400 Q 175 390 180 380 Z" fill="url(#ribbon-grad)" opacity="0.9"/>
+                        <path d="M 195 390 Q 200 370 190 355 Q 195 350 200 355 Q 210 375 205 395 Z" fill="url(#ribbon-grad)" opacity="0.8"/>
+                        <path d="M 245 390 Q 240 370 250 355 Q 245 350 240 355 Q 230 375 235 395 Z" fill="url(#ribbon-grad)" opacity="0.8"/>
+                        <circle cx="220" cy="390" r="5" fill="#ff1493"/>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="letter-card">
+                <div class="letter-text" id="loveLetterText">Confession of Patience
+
+My love, Marya,
+
+I'm sorry if, for now, all I can give you are virtual flowers. But I hope that when you see them, you also see the effort, thought, and love I put into making them. I made this because I want you to know just how serious I am about waiting for you.
+
+I wanted to be the perfect boyfriend for you. I know I wasn't perfect, and I know there are things I could have done better. But I want to become someone you can always be proud of, someone you can trust, and someone who will always be there to support you.
+
+I know you're not ready, and I respect that. I won't pressure you or ask you to choose me before you're ready. If it takes four years for you to finish your studies, then I'll be patient. And during those four years, I'll do my best to make your life worthwhile, to make you feel things you've never felt before, and to give you the kind of love and happiness that I know I can give. I'll support you in my own little ways, even through the smallest things, because sometimes it's the little things that mean the most.
+
+I love you like a river finds its way to the sea, naturally and patiently. I love you like a soul finds the moon beautiful despite all its craters. I don't love you because you're perfect. I love you because you're you.
+
+Maybe love isn't always about holding on. Sometimes, it's about having the patience to let someone grow while still keeping them close in your heart.
+
+So do your best. Knowing that if you win, I'll be there to celebrate your victories with you. And when the rain comes to water the flowers, I don't mind getting wet with you. Whatever happens, you don't have to face it alone.
+
+I'll be here through the good days, the difficult days, the moments when you feel like giving up, and the moments when you finally realize how far you've come. I want to see you succeed, even if the road there takes time.
+
+And if someday you change your mind, I hope you remember that I'll still be here.
+
+Not waiting for you to hurry.
+Just waiting for the day you might finally be ready.
+
+I love you. And for now, these virtual flowers will have to speak for the love I can't quite put into words. &#10084;&#65039;</div>
+                <div class="edit-controls">
+                    <button class="action-sub-btn" onclick="lockAndCelebrate()">Done &#10024;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function createAmbientSparkles() {
+            const container = document.getElementById('sparkleLayer');
+            const totalSparkles = 50;
+            for (let i = 0; i < totalSparkles; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('particle');
+                sparkle.style.left = Math.random() * 100 + 'vw';
+                sparkle.style.width = sparkle.style.height = (Math.random() * 6 + 2) + 'px';
+                sparkle.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                sparkle.style.animationDelay = (Math.random() * 4) + 's';
+                container.appendChild(sparkle);
+            }
+        }
+
+        function createFallingPetals() {
+            const container = document.getElementById('sparkleLayer');
+            const colors = ['#ffb3c6', '#ff6b8a', '#ff8a80', '#e1bee7', '#ffdcc0', '#ffffff'];
+            for (let i = 0; i < 15; i++) {
+                const petal = document.createElement('div');
+                petal.classList.add('petal-falling');
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.top = '-20px';
+                petal.style.background = colors[Math.floor(Math.random() * colors.length)];
+                petal.style.animationDuration = (Math.random() * 4 + 3) + 's';
+                petal.style.animationDelay = (Math.random() * 6) + 's';
+                container.appendChild(petal);
+            }
+        }
+
+        function startFlowerBloom() {
+            document.getElementById('introScreen').classList.remove('active');
+            document.getElementById('flowerScreen').classList.add('active');
+            createExplosionParticles();
+            createFallingPetals();
+        }
+
+        function createExplosionParticles() {
+            const container = document.getElementById('sparkleLayer');
+            for (let i = 0; i < 40; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.left = (Math.random() * 60 + 20) + 'vw';
+                p.style.width = p.style.height = (Math.random() * 8 + 3) + 'px';
+                p.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                container.appendChild(p);
+            }
+        }
+
+        function lockAndCelebrate() {
+            createExplosionParticles();
+            const textElement = document.getElementById('loveLetterText');
+            textElement.blur();
+        }
+
+        window.onload = function() {
+            createAmbientSparkles();
+        };
+    </script>
+</body>
+</html>
