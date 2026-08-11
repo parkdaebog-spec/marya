@@ -1,11 +1,10 @@
 services:
-  - type: static
+  - type: web
     name: marya
-    runtime: static
+    runtime: python
     repo: https://github.com/parkdaebog-spec/marya.git
     branch: marya
-    publishPath: .
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /marya.html
+    buildCommand: ""
+    startCommand: python serve.py
+    autoDeploy: true
+    plan: free
