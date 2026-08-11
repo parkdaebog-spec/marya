@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: marya
+    runtime: python
+    repo: https://github.com/parkdaebog-spec/marya.git
+    branch: cath
+    buildCommand: echo "no build required"
+    startCommand: python serve.py
+    autoDeploy: true
+    plan: free
