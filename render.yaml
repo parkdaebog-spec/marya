@@ -4,7 +4,7 @@ services:
     runtime: python
     repo: https://github.com/parkdaebog-spec/marya.git
     branch: marya
-    buildCommand: ""
+    buildCommand: echo "no build required"
     startCommand: python serve.py
     autoDeploy: true
     plan: free
