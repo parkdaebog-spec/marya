@@ -1,0 +1,12 @@
+services:
+  - type: static
+    name: marya
+    runtime: static
+    repo: https://github.com/parkdaebog-spec/marya.git
+    branch: marya
+    buildCommand: ""
+    publishPath: .
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /marya.html
