@@ -3,7 +3,7 @@ services:
     name: marya
     runtime: python
     repo: https://github.com/parkdaebog-spec/marya.git
-    branch: maria
+    branch: cassy
     buildCommand: echo "no build required"
     startCommand: python serve.py
     autoDeploy: true
