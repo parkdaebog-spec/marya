@@ -171,7 +171,8 @@ function Update-HtmlPolaroids([string[]]$ImageNames, [string]$RecipientName) {
             if ($raw.Contains($hookText)) {
                 $raw = $raw.Replace($hookText, "$hookText$polaroidHtml")
             } else {
-                $raw = $raw.Replace('</div>`r`n                <div class="edit-controls">', "$polaroidHtml</div>`r`n                <div class="edit-controls">")
+                $editMarker = '<div class="edit-controls">'
+                $raw = $raw.Replace($editMarker, "$polaroidHtml$editMarker")
             }
         }
     }
