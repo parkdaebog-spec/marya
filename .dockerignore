@@ -1,0 +1,14 @@
+.git
+.gitignore
+__pycache__
+*.py
+*.yaml
+*.yml
+*.md
+Dockerfile
+.dockerignore
+*.bat
+*.ps1
+graphify/
+graphify-out/
+tools/
